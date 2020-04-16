@@ -24,6 +24,8 @@ import Instabug, {
   CrashReporting,
   Replies,
 } from 'instabug-reactnative';
+import BottomSheet from 'reanimated-bottom-sheet';
+
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -36,12 +38,21 @@ export default class App extends Component<{}> {
     this.state = {
       switchValue: true,
       colorTheme: 'Light',
+      shouldCrash: false,
     };
 
     Instabug.startWithToken('068ba9a8c3615035e163dc5f829c73be', [
       Instabug.invocationEvent.floatingButton,
     ]);
   }
+
+  renderContent = () => (
+    <View style={{ backgroundColor: 'tomato', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={styles.text}> HI THERE </Text>
+    </View>
+  );
+
+  renderHeader = () => <View style={{ backgroundColor: 'yellow', height: 32 }} />
 
   render() {
     return (
@@ -52,6 +63,9 @@ export default class App extends Component<{}> {
             different options for customizing the SDK and how easy it is to integrate it to your
             existing app
           </Text>
+          <TouchableOpacity style={[styles.button, { backgroundColor: 'tomato' }]} onPress={() => this.setState({ shouldCrash: true })}>
+            <Text style={styles.text}> CRASH BOTTOM SHEET </Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={() => this.invoke()}>
             <Text style={styles.text}> INVOKE </Text>
           </TouchableOpacity>
@@ -104,6 +118,12 @@ export default class App extends Component<{}> {
             <Switch onValueChange={this.toggleSwitch} value={this.state.switchValue} />
           </View>
         </ScrollView>
+        {this.state.shouldCrash && (
+          <BottomSheet
+            snapPoints={[NaN, 500, 32]}
+            renderContent={this.renderContent}
+            renderHeader={this.renderHeader}
+          />)}
       </View>
     );
   }
